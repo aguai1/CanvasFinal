@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom|center"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:textSize="18dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_can_check_in_daily_to_get_n_free_credits_that_s_free_credits_n_for_you_every_day"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        />
+</LinearLayout>
+
+
+

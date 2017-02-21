@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:textSize="18dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/come_back_tomorrow_for_free_n_credits_that_s_free_credits_for_n_you_every_day"
+    android:gravity="center_horizontal"
+    android:textColor="@color/white"
+    android:layout_gravity="center|top"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    />
