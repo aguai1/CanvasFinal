@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GuideView extends View {
 
-    private Map<RectF,Integer> rectIntegerMap = new ConcurrentHashMap<>();
-    private Map<Integer,RectF> integerRectMap = new ConcurrentHashMap<>();
-    private List<RectF> rectList=new ArrayList<>();
+    private Map<RectF, Integer> rectIntegerMap = new ConcurrentHashMap<>();
+    private Map<Integer, RectF> integerRectMap = new ConcurrentHashMap<>();
+    private List<RectF> rectList = new ArrayList<>();
     private Bitmap mFgBitmap;
     private Canvas mCanvas;
     private Paint mPaint;
@@ -48,7 +47,7 @@ public class GuideView extends View {
     }
 
     private void init() {
-        mPaint=new Paint();
+        mPaint = new Paint();
         mPaint.setAlpha(0);
         mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -69,26 +68,26 @@ public class GuideView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mFgBitmap!=null) {
+        if (mFgBitmap != null) {
             canvas.drawBitmap(mFgBitmap, 0, 0, null);
         }
     }
 
-    public void addRect(RectF rectF,  int id,int border) {
+    public void addRect(RectF rectF, int id, int border) {
 //        计算屏幕位置
         int[] loc = new int[2];
         getLocationOnScreen(loc);
-        rectF.left-=loc[0];
-        rectF.top-=loc[1];
-        rectF.right-=loc[0];
-        rectF.bottom-=loc[1];
-        RectF rect=new RectF(rectF.left-border>10?rectF.left-border:10,
-                rectF.top-border>10?rectF.top-border:10,
-                rectF.right+border<getWidth()?rectF.right+border:getWidth()-10,
-                rectF.bottom+border<getHeight()?rectF.bottom+border:getHeight()-10);
-        rectIntegerMap.put(rect,id);
-        integerRectMap.put(id,rect);
-        rectList.add(0,rect);
+        rectF.left -= loc[0];
+        rectF.top -= loc[1];
+        rectF.right -= loc[0];
+        rectF.bottom -= loc[1];
+        RectF rect = new RectF(rectF.left - border > 10 ? rectF.left - border : 10,
+                rectF.top - border > 10 ? rectF.top - border : 10,
+                rectF.right + border < getWidth() ? rectF.right + border : getWidth() - 10,
+                rectF.bottom + border < getHeight() ? rectF.bottom + border : getHeight() - 10);
+        rectIntegerMap.put(rect, id);
+        integerRectMap.put(id, rect);
+        rectList.add(0, rect);
 
     }
 
@@ -96,13 +95,13 @@ public class GuideView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        if (event.getAction()==MotionEvent.ACTION_DOWN){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (!hasShowAll) return true;
-            for(int i=0;i<rectList.size();++i){
-                if (rectList.get(i).contains(x,y)){
+            for (int i = 0; i < rectList.size(); ++i) {
+                if (rectList.get(i).contains(x, y)) {
                     GuideContainer parent = (GuideContainer) getParent();
                     parent.animOut();
-                    return true;
+                    return false;
                 }
             }
         }
@@ -121,16 +120,25 @@ public class GuideView extends View {
         invalidate();
     }
 
-
+    public void showAllRect() {
+        initBg();
+        for (int i = 0; i < rectList.size(); ++i) {
+            mCanvas.drawRoundRect(rectList.get(i), 10, 10, mPaint);
+        }
+        invalidate();
+    }
 
     public void showRectByIndex(int i) {
-        if (mCanvas==null)return;
-        mCanvas.drawRoundRect(rectList.get(rectList.size()-i-1),10,10,mPaint);
+        if (mCanvas == null) return;
+        int i1 = rectList.size() - i - 1;
+        if (i1 >= rectList.size() || i1 < 0) return;
+        mCanvas.drawRoundRect(rectList.get(i1), 10, 10, mPaint);
         invalidate();
     }
 
     /**
      * 设置是否动画结束 控件是否完全展示
+     *
      * @param hasShowAll
      */
     public void setHasShowAll(boolean hasShowAll) {

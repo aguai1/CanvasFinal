@@ -20,6 +20,9 @@ public class GuideContainer extends AbsoluteLayout {
 
     private GuideView guideView;
     private List<View> viewsList;
+    private AlphaAnimation animation;
+
+    private boolean isExits = false;
 
     public GuideContainer(Context context) {
         super(context);
@@ -49,6 +52,7 @@ public class GuideContainer extends AbsoluteLayout {
 
     /**
      * 增加在指定id前面
+     *
      * @param view
      * @param id
      */
@@ -64,6 +68,7 @@ public class GuideContainer extends AbsoluteLayout {
 
     /**
      * 增加在指定控件后面
+     *
      * @param view
      * @param id
      */
@@ -79,6 +84,7 @@ public class GuideContainer extends AbsoluteLayout {
 
     /**
      * 增加水平方向控件
+     *
      * @param view  控件
      * @param above 控件上面的试图
      * @param below 控件下面的试图
@@ -101,18 +107,39 @@ public class GuideContainer extends AbsoluteLayout {
     }
 
     /**
+     * 获取viewGroup内的普通控件列表
+     *
+     * @param viewGroup
+     * @return
+     */
+    private List<View> getViewList(ViewGroup viewGroup) {
+        List<View> views = new ArrayList<>();
+        for (int i = 0; i < viewGroup.getChildCount(); ++i) {
+            View childAt = viewGroup.getChildAt(i);
+            if (childAt instanceof ViewGroup) {
+                ViewGroup viewGroup1 = (ViewGroup) childAt;
+                views.addAll(getViewList(viewGroup1));
+            } else {
+                views.add(childAt);
+            }
+        }
+        return views;
+    }
+
+    /**
      * 动态显示
      */
     public void animIn() {
+        isExits = false;
         setVisibility(VISIBLE);
-        int blackCount=0;
-        int allCount=0;
+        int blackCount = 0;
+        int allCount = 0;
         for (int i = 0; i < viewsList.size(); ++i) {
             View view = viewsList.get(i);
             if (view == null) {
                 allCount++;
                 blackCount++;
-                final int finalBlackCount = blackCount-1;
+                final int finalBlackCount = blackCount - 1;
                 guideView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -142,34 +169,16 @@ public class GuideContainer extends AbsoluteLayout {
     }
 
     /**
-     * 获取viewGroup内的普通控件列表
-     * @param viewGroup
-     * @return
-     */
-    private List<View> getViewList(ViewGroup viewGroup) {
-        List<View> views = new ArrayList<>();
-        for (int i = 0; i < viewGroup.getChildCount(); ++i) {
-            View childAt = viewGroup.getChildAt(i);
-            if (childAt instanceof ViewGroup) {
-                ViewGroup viewGroup1 = (ViewGroup) childAt;
-                views.addAll(getViewList(viewGroup1));
-            } else {
-                views.add(childAt);
-            }
-        }
-        return views;
-    }
-
-    /**
      * 淡出
      */
     public void animOut() {
         viewsList.clear();
         guideView.clearRect();
-        Animation animation = new AlphaAnimation(1, 0);
+        guideView.setHasShowAll(false);
+        animation = new AlphaAnimation(1, 0);
         animation.setDuration(500);
         this.startAnimation(animation);
-
+        isExits = true;
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -178,7 +187,7 @@ public class GuideContainer extends AbsoluteLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                guideView.setHasShowAll(false);
+                if (!isExits) return;
                 clearAllView();
                 setVisibility(GONE);
             }
@@ -193,8 +202,8 @@ public class GuideContainer extends AbsoluteLayout {
     /**
      * 清空所有控件
      */
-    private void clearAllView() {
-        guideView.clearRect();
+    public void clearAllView() {
+        viewsList.clear();
         for (int i = 1; i < getChildCount(); ++i) {
             removeViewAt(i);
             i--;
@@ -203,9 +212,22 @@ public class GuideContainer extends AbsoluteLayout {
 
     /**
      * 动态设置GuideView
+     *
      * @param guideView
      */
     public void setGuideView(GuideView guideView) {
         this.guideView = guideView;
     }
+
+    public void noAnimRefresh() {
+        isExits = false;
+        setVisibility(VISIBLE);
+        guideView.setHasShowAll(true);
+        if (animation != null)
+            animation.cancel();
+        clearAnimation();
+        guideView.showAllRect();
+        requestLayout();
+    }
+
 }
