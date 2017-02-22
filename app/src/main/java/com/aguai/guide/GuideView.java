@@ -11,7 +11,11 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.AbsoluteLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,10 @@ public class GuideView extends View {
 
     private Map<RectF, Integer> rectIntegerMap = new ConcurrentHashMap<>();
     private Map<Integer, RectF> integerRectMap = new ConcurrentHashMap<>();
+    //    映射后的矩形列表
     private List<RectF> rectList = new ArrayList<>();
+    //   映射前的矩形列表
+    private List<RectF> orgRectList = new ArrayList<>();
     private Bitmap mFgBitmap;
     private Canvas mCanvas;
     private Paint mPaint;
@@ -81,6 +88,7 @@ public class GuideView extends View {
         rectF.top -= loc[1];
         rectF.right -= loc[0];
         rectF.bottom -= loc[1];
+        orgRectList.add(0,rectF);
         RectF rect = new RectF(rectF.left - border > 10 ? rectF.left - border : 10,
                 rectF.top - border > 10 ? rectF.top - border : 10,
                 rectF.right + border < getWidth() ? rectF.right + border : getWidth() - 10,
@@ -115,6 +123,7 @@ public class GuideView extends View {
     public void clearRect() {
         rectIntegerMap.clear();
         integerRectMap.clear();
+        orgRectList.clear();
         rectList.clear();
         initBg();
         invalidate();
@@ -143,5 +152,18 @@ public class GuideView extends View {
      */
     public void setHasShowAll(boolean hasShowAll) {
         this.hasShowAll = hasShowAll;
+    }
+
+    public Integer getIdByIndex(int i) {
+        int i1 = orgRectList.size() - i-1;
+        if (i1>orgRectList.size()) return null;
+        return rectIntegerMap.get(rectList.get(i1));
+
+    }
+
+    public RectF getRectByIndex(int i) {
+        int i1 = orgRectList.size() - i-1;
+        if (i1>orgRectList.size()) return null;
+        return orgRectList.get(i1);
     }
 }

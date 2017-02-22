@@ -18,11 +18,12 @@ import java.util.List;
 
 public class GuideContainer extends AbsoluteLayout {
 
+
     private GuideView guideView;
     private List<View> viewsList;
     private AlphaAnimation animation;
 
-    private boolean isExits = false;
+    private boolean isShow = false;
 
     public GuideContainer(Context context) {
         super(context);
@@ -129,13 +130,14 @@ public class GuideContainer extends AbsoluteLayout {
     /**
      * 动态显示
      */
-    public void animIn() {
-        isExits = false;
+    public void animIn(int time) {
+        isShow = true;
         setVisibility(VISIBLE);
         int blackCount = 0;
         int allCount = 0;
         for (int i = 0; i < viewsList.size(); ++i) {
-            View view = viewsList.get(i);
+            final View view = viewsList.get(i);
+            //为空则显示 black区域
             if (view == null) {
                 allCount++;
                 blackCount++;
@@ -145,18 +147,28 @@ public class GuideContainer extends AbsoluteLayout {
                     public void run() {
                         guideView.showRectByIndex(finalBlackCount);
                     }
-                }, allCount * 200);
+                }, allCount * time);
             } else {
-                final List<View> views = getViewList((ViewGroup) view);
-                for (int j = 0; j < views.size(); ++j) {
-                    allCount++;
-                    final int finalJ = j;
-                    views.get(j).postDelayed(new Runnable() {
+                //  依次显示控件
+                if(view instanceof ViewGroup) {
+                    final List<View> views = getViewList((ViewGroup) view);
+                    for (int j = 0; j < views.size(); ++j) {
+                        allCount++;
+                        final int finalJ = j;
+                        views.get(j).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                views.get(finalJ).setVisibility(VISIBLE);
+                            }
+                        }, allCount * time);
+                    }
+                }else {
+                    view.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            views.get(finalJ).setVisibility(VISIBLE);
+                            view.setVisibility(VISIBLE);
                         }
-                    }, allCount * 200);
+                    }, allCount * time);
                 }
             }
         }
@@ -165,7 +177,7 @@ public class GuideContainer extends AbsoluteLayout {
             public void run() {
                 guideView.setHasShowAll(true);
             }
-        }, allCount * 200);
+        }, allCount * time);
     }
 
     /**
@@ -178,7 +190,7 @@ public class GuideContainer extends AbsoluteLayout {
         animation = new AlphaAnimation(1, 0);
         animation.setDuration(500);
         this.startAnimation(animation);
-        isExits = true;
+        isShow = false;
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -187,7 +199,7 @@ public class GuideContainer extends AbsoluteLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (!isExits) return;
+                if (isShow) return;
                 clearAllView();
                 setVisibility(GONE);
             }
@@ -220,14 +232,18 @@ public class GuideContainer extends AbsoluteLayout {
     }
 
     public void noAnimRefresh() {
-        isExits = false;
+        isShow=true;
         setVisibility(VISIBLE);
         guideView.setHasShowAll(true);
-        if (animation != null)
-            animation.cancel();
-        clearAnimation();
         guideView.showAllRect();
+        List<View> viewList = getViewList(this);
+        for (View view:viewList){
+            view.setVisibility(VISIBLE);
+        }
         requestLayout();
     }
 
+    public boolean isShow() {
+        return isShow;
+    }
 }

@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 guideContainer.clearAllView();
                 showGuideCheckIn();
-                guideContainer.noAnimRefresh();
+                guideContainer.animIn(200);
                 button.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                         showGuideCheckIn2();
                         guideContainer.noAnimRefresh();
                     }
-                }, 3000);
+                }, 500);
             }
         });
         ViewTreeObserver viewTreeObserver = findViewById(R.id.laymain).getViewTreeObserver();
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onGlobalLayout() {
                 showGuideVideoLowValueCountry();
-                guideContainer.animIn();
+                guideContainer.animIn(200);
                 findViewById(R.id.laymain).getViewTreeObserver()
                         .removeGlobalOnLayoutListener(this);
             }
