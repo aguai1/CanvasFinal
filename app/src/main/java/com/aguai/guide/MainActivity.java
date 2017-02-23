@@ -56,29 +56,29 @@ public class MainActivity extends AppCompatActivity {
 
         View inflate = getLayoutInflater().inflate(R.layout.guide_item_watch_more_videos, null);
         View inflate1 = getLayoutInflater().inflate(R.layout.guide_item_complete_an_offer, null);
-        guideContainer.addBlackRect(button, inflate, null, 10);
-        guideContainer.addBlackRect(button2, null, inflate1, 10);
+        guideContainer.addBlackRect(button, inflate, null, 10,null);
+        guideContainer.addBlackRect(button2, null, inflate1, 10,null);
     }
 
     private void showGuideVideoLowValueCountry() {
         View view = getLayoutInflater().inflate(R.layout.guide_item_watch_more_videos, null);
-        guideContainer.addBlackRect(button, view, null, 10);
+        guideContainer.addBlackRect(button, view, null, 10,null);
 
         View inflate = getLayoutInflater().inflate(R.layout.guide_item_check_in_for_novideo_highvalue, null);
         View inflate1 = getLayoutInflater().inflate(R.layout.guide_item_test_lucky_1_credits, null);
-        guideContainer.addBlackRect(findViewById(R.id.lay1), inflate, null, -10);
-        guideContainer.addBlackRect(findViewById(R.id.lay2), null, inflate1, -10);
+        guideContainer.addBlackRect(findViewById(R.id.lay1), inflate, null, -10,null);
+        guideContainer.addBlackRect(findViewById(R.id.lay2), null, inflate1, -10,null);
     }
 
     private void showGuideCheckIn() {
 
         View inflate = getLayoutInflater().inflate(R.layout.guide_item_check_in, null);
-        guideContainer.addBlackRect(findViewById(R.id.lay1), inflate, null, 10);
+        guideContainer.addBlackRect(findViewById(R.id.lay1), inflate, null, 10,null);
     }
 
     private void showGuideCheckIn2() {
         View inflate = getLayoutInflater().inflate(R.layout.guide_item_check_in, null);
-        guideContainer.addBlackRect(findViewById(R.id.lay2), inflate, null, 10);
+        guideContainer.addBlackRect(findViewById(R.id.lay2), inflate, null, 10,null);
     }
 
     public void exit(View view) {

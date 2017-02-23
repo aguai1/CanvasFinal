@@ -18,7 +18,6 @@ import java.util.List;
 
 public class GuideContainer extends AbsoluteLayout {
 
-
     private GuideView guideView;
     private List<View> viewsList;
     private AlphaAnimation animation;
@@ -85,17 +84,17 @@ public class GuideContainer extends AbsoluteLayout {
 
     /**
      * 增加水平方向控件
-     *
-     * @param view  控件
+     *  @param view  控件
      * @param above 控件上面的试图
      * @param below 控件下面的试图
+     * @param listener 点击回调。null则点击后走 消息不拦截流程
      */
-    public void addBlackRect(View view, View above, View below, int border) {
+    public void addBlackRect(View view, View above, View below, int border, GuideView.OnClickListener listener) {
         int[] loc = new int[2];
         viewsList.add(null);
         view.getLocationOnScreen(loc);
         RectF rectF = new RectF(loc[0], loc[1], loc[0] + view.getWidth(), loc[1] + view.getHeight());
-        guideView.addRect(rectF, view.getId(), border);
+        guideView.addRect(rectF, view.getId(), border, listener);
         if (above != null) {
             addAboveToId(above, view.getId());
             viewsList.add(above);

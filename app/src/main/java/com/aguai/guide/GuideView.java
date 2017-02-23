@@ -30,7 +30,7 @@ public class GuideView extends View {
     private Map<RectF, Integer> rectIntegerMap = new ConcurrentHashMap<>();
     private Map<Integer, RectF> integerRectMap = new ConcurrentHashMap<>();
     //    映射后的矩形列表
-    private List<RectF> rectList = new ArrayList<>();
+    private List<RectInfo> rectList = new ArrayList<>();
     //   映射前的矩形列表
     private List<RectF> orgRectList = new ArrayList<>();
     private Bitmap mFgBitmap;
@@ -38,6 +38,10 @@ public class GuideView extends View {
     private Paint mPaint;
     private boolean hasShowAll;
 
+    class RectInfo{
+        RectF rectF;
+        OnClickListener onClickListener;
+    }
     public GuideView(Context context) {
         super(context);
         init();
@@ -80,7 +84,7 @@ public class GuideView extends View {
         }
     }
 
-    public void addRect(RectF rectF, int id, int border) {
+    public void addRect(RectF rectF, int id, int border, OnClickListener listener) {
 //        计算屏幕位置
         int[] loc = new int[2];
         getLocationOnScreen(loc);
@@ -95,7 +99,10 @@ public class GuideView extends View {
                 rectF.bottom + border < getHeight() ? rectF.bottom + border : getHeight() - 10);
         rectIntegerMap.put(rect, id);
         integerRectMap.put(id, rect);
-        rectList.add(0, rect);
+        RectInfo rectInfo=new RectInfo();
+        rectInfo.rectF=rect;
+        rectInfo.onClickListener=listener;
+        rectList.add(0, rectInfo);
 
     }
 
@@ -106,10 +113,22 @@ public class GuideView extends View {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (!hasShowAll) return true;
             for (int i = 0; i < rectList.size(); ++i) {
-                if (rectList.get(i).contains(x, y)) {
-                    GuideContainer parent = (GuideContainer) getParent();
-                    parent.animOut();
-                    return false;
+                RectInfo rectInfo = rectList.get(i);
+                if (rectInfo.rectF.contains(x, y)) {
+                    if (rectInfo.onClickListener!=null){
+                        boolean b = rectInfo.onClickListener.onClick();
+                        if (b){
+                            GuideContainer parent = (GuideContainer) getParent();
+                            parent.animOut();
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        GuideContainer parent = (GuideContainer) getParent();
+                        parent.animOut();
+                        return false;
+                    }
                 }
             }
         }
@@ -132,7 +151,7 @@ public class GuideView extends View {
     public void showAllRect() {
         initBg();
         for (int i = 0; i < rectList.size(); ++i) {
-            mCanvas.drawRoundRect(rectList.get(i), 10, 10, mPaint);
+            mCanvas.drawRoundRect(rectList.get(i).rectF, 10, 10, mPaint);
         }
         invalidate();
     }
@@ -141,7 +160,7 @@ public class GuideView extends View {
         if (mCanvas == null) return;
         int i1 = rectList.size() - i - 1;
         if (i1 >= rectList.size() || i1 < 0) return;
-        mCanvas.drawRoundRect(rectList.get(i1), 10, 10, mPaint);
+        mCanvas.drawRoundRect(rectList.get(i1).rectF, 10, 10, mPaint);
         invalidate();
     }
 
@@ -165,5 +184,9 @@ public class GuideView extends View {
         int i1 = orgRectList.size() - i-1;
         if (i1>orgRectList.size()) return null;
         return orgRectList.get(i1);
+    }
+
+    public interface OnClickListener{
+        boolean onClick();
     }
 }
