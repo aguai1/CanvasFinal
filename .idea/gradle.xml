@@ -9,6 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/canvaswrapper" />
+            <option value="$PROJECT_DIR$/guideview" />
+            <option value="$PROJECT_DIR$/stickerview" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

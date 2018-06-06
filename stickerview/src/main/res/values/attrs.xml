@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="MultipleLayersView">
+        <attr name="LT_Button" format="reference" />
+        <attr name="LB_Button" format="reference" />
+        <attr name="RT_Button" format="reference" />
+        <attr name="RB_Button" format="reference" />
+
+        <attr name="LT_Button_Enable" format="boolean" />
+        <attr name="LB_Button_Enable" format="boolean" />
+        <attr name="RT_Button_Enable" format="boolean" />
+        <attr name="RB_Button_Enable" format="boolean" />
+    </declare-styleable>
+
+</resources>

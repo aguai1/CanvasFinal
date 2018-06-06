@@ -3,7 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Guide.iml" filepath="$PROJECT_DIR$/Guide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GuideView.iml" filepath="$PROJECT_DIR$/.idea/GuideView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/canvaswrapper/canvaswrapper.iml" filepath="$PROJECT_DIR$/canvaswrapper/canvaswrapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/guideview/guideview.iml" filepath="$PROJECT_DIR$/guideview/guideview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stickerview/stickerview.iml" filepath="$PROJECT_DIR$/stickerview/stickerview.iml" />
     </modules>
   </component>
 </project>
