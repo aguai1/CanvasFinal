@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/CanvasFinal.iml" filepath="$PROJECT_DIR$/.idea/CanvasFinal.iml" />
       <module fileurl="file://$PROJECT_DIR$/Guide.iml" filepath="$PROJECT_DIR$/Guide.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/GuideView.iml" filepath="$PROJECT_DIR$/.idea/GuideView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />

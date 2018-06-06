@@ -58,7 +58,7 @@ public class GuideContainer extends AbsoluteLayout {
      */
     public void addAboveToId(View view, int id) {
         RectF rectById = guideView.getRectById(id);
-        AbsoluteLayout.LayoutParams lap = new AbsoluteLayout.LayoutParams(getLayoutParams());
+        LayoutParams lap = new LayoutParams(getLayoutParams());
         lap.width = getWidth();
         lap.height = (int) getContext().getResources().getDimension(R.dimen.item_height);
         lap.x = 0;
@@ -74,7 +74,7 @@ public class GuideContainer extends AbsoluteLayout {
      */
     public void addBelowToId(View view, int id) {
         RectF rectById = guideView.getRectById(id);
-        AbsoluteLayout.LayoutParams lap = new AbsoluteLayout.LayoutParams(getLayoutParams());
+        LayoutParams lap = new LayoutParams(getLayoutParams());
         lap.x = 0;
         lap.y = (int) rectById.bottom;
         lap.width = getWidth();

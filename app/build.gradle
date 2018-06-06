@@ -5,11 +5,16 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.aguai.guide"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
     buildTypes {
         release {
@@ -22,4 +27,9 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     api 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:design:27.1.1'
+
+    implementation project(':canvaswrapper')
+    //View绑定
+    api 'com.jakewharton:butterknife:7.0.1'
 }

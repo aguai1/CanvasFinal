@@ -1,0 +1,76 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clipToPadding="true"
+    android:orientation="vertical"
+    android:background="#000">
+  <com.aguai.canvaswrap.SfDisplayInfoView
+      android:id="@+id/displayview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/rect"
+        style="@style/MenuStyle"
+        android:text="矩形"/>
+    <TextView
+        android:id="@+id/circle"
+        style="@style/MenuStyle"
+        android:text="圆形"/>
+
+    <TextView
+        android:id="@+id/oval"
+        style="@style/MenuStyle"
+        android:text="椭圆"/>
+
+    <TextView
+        android:id="@+id/txt"
+        style="@style/MenuStyle"
+        android:text="文字"/>
+
+  </LinearLayout>
+
+  <com.aguai.demo.widget.arcmenu.ArcMenu
+      android:id="@+id/arc_menu"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:position="right_bottom">
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/id_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/ic_add_white"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/iv_pen"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/btn_pen"
+        app:backgroundTint="@color/white"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/iv_eraser"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/btn_eraser"
+        app:backgroundTint="@color/white"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/iv_nomal"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/btn_normal"
+        app:backgroundTint="@color/white"
+        />
+  </com.aguai.demo.widget.arcmenu.ArcMenu>
+</FrameLayout>
+
