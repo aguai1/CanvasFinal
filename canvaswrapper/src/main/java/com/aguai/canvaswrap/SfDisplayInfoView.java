@@ -27,6 +27,7 @@ import java.util.Queue;
  */
 public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceHolder.Callback {
 
+    private static final String TAG = "SfDisplayInfoView";
     /**
      * 操作模式
      * 1   画笔
@@ -38,7 +39,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     public static final int MODE_ERASER = 2;
     public static final int MODE_SHOW = 3;
     public static final int MODE_STATIC = 4;
-    private static final String TAG = SfDisplayInfoView.class.getCanonicalName();
     private static final int NONE = 0;
     private static final int DRAG = 1;
     private static final int ZOOM = 2;
@@ -65,8 +65,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     private List<AbsShape> absShapeList = new ArrayList<>();
     private Canvas canvas = null; //定义画布
 
-    private LoadThread loadThread = null;     //定义线程
-    private LoadThread drawThread = null;     //定义线程
     private ShowThread showThread = null;
 
     private SurfaceHolder sfh = null;
@@ -75,8 +73,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
      * 显示队列
      */
     private Queue<AbsShape> loadQueue = new ArrayDeque<>();
-
-    private Queue<AbsShape> drawQueue = new ArrayDeque<>();
 
     private boolean isfinsh = false;
     private boolean isLoadHisSucceed = false;
@@ -99,12 +95,8 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     }
 
     private void init(Context context) {
-        loadThread = new LoadThread(loadQueue);
-        drawThread = new LoadThread(drawQueue);
+
         showThread = new ShowThread();
-        //启动绘图线程
-        loadThread.start();
-        drawThread.start();
         showThread.start();
 
         sfh = getHolder();
@@ -133,12 +125,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         isfinsh = true;
-        synchronized (loadThread) {
-            loadThread.notify();
-        }
-        synchronized (drawThread) {
-            drawThread.notify();
-        }
         synchronized (showThread) {
             showThread.notifyAll();
         }
@@ -150,20 +136,34 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     public void addShape(final AbsShape shape) {
         loadQueue.add(shape);
         absShapeList.add(shape);
-        synchronized (loadThread) {
-            loadThread.notify();
-        }
+        drawNewShapes();
     }
+
 
     @Override
     public void addShapes(List<AbsShape> shapes) {
         loadQueue.addAll(shapes);
-        for (int i = 0; i < shapes.size(); ++i) {
-            AbsShape absShape = shapes.get(i);
-            absShapeList.add(absShape);
-        }
-        synchronized (loadThread) {
-            loadThread.notify();
+        absShapeList.addAll(shapes);
+        drawNewShapes();
+    }
+
+    private void drawNewShapes() {
+        if (!loadQueue.isEmpty()) {
+            final AbsShape shape = loadQueue.poll();
+            if (mCanvas != null)
+                shape.drawShape(mCanvas);
+            if (CURRENT_MODE == MODE_SHOW)
+                moveToVisiableArea(shape.getCenterPostion());
+            myInvalidate();
+        } else {
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
     }
 
@@ -184,8 +184,9 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         absShapeList.clear();
         refresh();
     }
+
     @Override
-    public void moveShape( AbsShape absShape, final int x, final int y) {
+    public void moveShape(AbsShape absShape, final int x, final int y) {
         if (absShape != null) {
             if (absShape instanceof PathShape) {
                 PathShape shape = (PathShape) absShape;
@@ -372,7 +373,8 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         if (tempShape == null) return;
         float[] floats = mapPointFromInvertMatrix(x, y);
         tempShape.onAddPoint(floats[0], floats[1]);
-        addToDrawQueue(tempShape);
+        tempShape.drawShape(mCanvas);
+        myInvalidate();
     }
 
 
@@ -384,21 +386,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         }
         touchMove(x, y);
         absShapeList.add(tempShape);
-        loadQueue.add(tempShape);
-        synchronized (loadThread) {
-            loadThread.notify();
-        }
-
-    }
-
-    /**
-     * 加速涂鸦绘制，启动新线程
-     */
-    private void addToDrawQueue(AbsShape shape) {
-        drawQueue.add(shape);
-        synchronized (drawThread) {
-            drawThread.notify();
-        }
     }
 
     /**
@@ -485,40 +472,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         void onNewLine(PathShape lineShape);
     }
 
-    /**
-     * 加载数据的线程
-     */
-    private class LoadThread extends Thread {
-        private Queue<AbsShape> mQueue = new ArrayDeque<>();
-
-        LoadThread(Queue<AbsShape> loadQueue) {
-            super("LoadThread");
-            this.mQueue = loadQueue;
-        }
-
-        @Override
-        public void run() {
-            while (!isfinsh) {
-                if (!mQueue.isEmpty()) {
-                    final AbsShape shape = mQueue.poll();
-                    if (mCanvas != null)
-                        shape.drawShape(mCanvas);
-                    if (CURRENT_MODE == MODE_SHOW)
-                        moveToVisiableArea(shape.getCenterPostion());
-                    myInvalidate();
-                } else {
-                    synchronized (this) {
-                        try {
-                            this.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-            }
-        }
-    }
 
     /**
      * 画笔加速线程
@@ -527,6 +480,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         ShowThread() {
             super("ShowThread");
         }
+
         @Override
         public void run() {
             while (!isfinsh) {
