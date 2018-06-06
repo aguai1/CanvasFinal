@@ -30,6 +30,10 @@
         android:id="@+id/txt"
         style="@style/MenuStyle"
         android:text="文字"/>
+    <TextView
+        android:id="@+id/moveCenter"
+        style="@style/MenuStyle"
+        android:text="还原画布位置"/>
 
   </LinearLayout>
 

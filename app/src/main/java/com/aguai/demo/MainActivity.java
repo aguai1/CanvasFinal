@@ -10,7 +10,9 @@ import android.view.WindowManager;
 
 import com.aguai.canvaswrap.SfDisplayInfoView;
 import com.aguai.canvaswrap.shape.CircleShape;
+import com.aguai.canvaswrap.shape.OvalShape;
 import com.aguai.canvaswrap.shape.RectangleShape;
+import com.aguai.canvaswrap.shape.TextShape;
 import com.aguai.demo.widget.arcmenu.ArcMenu;
 import com.aguai.guide.R;
 
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         arcMenu.setOnMenuItemClickListener(new ArcMenu.OnMenuItemClickListener() {
             @Override
             public void onClick(View view, int pos) {
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.iv_pen:
                         displayview.setCurrentMode(SfDisplayInfoView.MODE_PAINT);
                         break;
@@ -62,20 +64,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick({R.id.oval, R.id.txt,R.id.rect, R.id.circle})
+    @OnClick({R.id.oval, R.id.txt, R.id.rect, R.id.circle,R.id.moveCenter})
     public void onViewClick(View view) {
         switch (view.getId()) {
             case R.id.rect:
                 RectangleShape rectangleShape = new RectangleShape(true, Color.RED, 10);
                 rectangleShape.onLayout(0, 0, 500, 800);
-                rectangleShape.setMeetingPage("");
                 displayview.addShape(rectangleShape);
                 break;
             case R.id.circle:
+                CircleShape circleShape = new CircleShape(true, Color.YELLOW, 10);
+                circleShape.onLayout(500, 500, 700, 700);
+                displayview.addShape(circleShape);
                 break;
             case R.id.oval:
+                OvalShape ovalShape = new OvalShape(true, Color.DKGRAY, 10);
+                ovalShape.onLayout(500, 600, 900, 1000);
+                displayview.addShape(ovalShape);
                 break;
             case R.id.txt:
+                TextShape text = new TextShape("阿怪的点点滴滴点点滴滴 ", Color.DKGRAY);
+                text.onLayout(100, 600, 200, 1000);
+                displayview.addShape(text);
+                break;
+            case R.id.moveCenter:
+                displayview.moveToCenter();
                 break;
         }
     }

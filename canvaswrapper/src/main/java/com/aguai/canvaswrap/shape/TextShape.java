@@ -13,7 +13,7 @@ public class TextShape extends AbsShape {
         mDrawRect = new RectF();
         mPaint = new Paint();
         mPaint.setColor(cyan);
-        mPaint.setTextSize(24);
+        mPaint.setTextSize(64);
         mPaint.setAntiAlias(true);//去除锯齿
         mPaint.setFilterBitmap(true);//对位图进行滤波处理
     }
