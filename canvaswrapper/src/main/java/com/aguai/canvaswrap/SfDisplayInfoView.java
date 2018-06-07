@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -28,25 +29,15 @@ import java.util.Queue;
 public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceHolder.Callback {
 
     private static final String TAG = "SfDisplayInfoView";
-    /**
-     * 操作模式
-     * 1   画笔
-     * 2  橡皮擦
-     * 3  展示，可拖动
-     * 4  展示，不可拖动
-     */
-    public static final int MODE_PAINT = 1;
-    public static final int MODE_ERASER = 2;
-    public static final int MODE_SHOW = 3;
-    public static final int MODE_STATIC = 4;
+
     private static final int NONE = 0;
     private static final int DRAG = 1;
     private static final int ZOOM = 2;
-    public static int CURRENT_MODE = MODE_SHOW;
-    float x_down = 0;
-    float y_down = 0;
-    float oldDist = 1f;
-    int mode = NONE;
+    private int mode = NONE;
+    public OpMode currentOpMode = OpMode.MODE_SHOW;
+    private float x_down = 0;
+    private float y_down = 0;
+    private float oldDist = 1f;
     private Bitmap mBitmap;
     private Canvas bitmapCanvas;
 
@@ -63,11 +54,14 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
      */
     private int brushWidth = 15;
     private int brushColor = Color.BLACK;
-    //    private Map<String, AbsShape> absShapeHashMap = new ConcurrentHashMap<>();
+
+
+    private int backgroundColor = Color.WHITE;
+    /**
+     * shape集合
+     */
     private List<AbsShape> absShapeList = new ArrayList<>();
-
     private ShowThread showThread = null;
-
     private SurfaceHolder sfh = null;
 
     /**
@@ -79,7 +73,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     private boolean isLoadHisSucceed = false;
     private int bitmapWidth = 2000;
     private int bitmapHeight = 1000;
-    private PathShape tempShape;
+    private PathShape tempPaintShape;
 
     private OnDrawLineListener onDrawLineListener;
 
@@ -101,6 +95,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setSizes(getMeasuredWidth(),getMeasuredHeight());
         moveToCenter();
     }
 
@@ -128,7 +123,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         L.e(TAG, "surfaceDestroyed");
     }
 
-
     @Override
     public void addShape(final AbsShape shape) {
         loadQueue.add(shape);
@@ -149,7 +143,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
             AbsShape shape = loadQueue.poll();
             if (bitmapCanvas != null)
                 shape.drawShape(bitmapCanvas);
-            if (CURRENT_MODE == MODE_SHOW){
+            if (currentOpMode == OpMode.MODE_SHOW) {
                 moveToVisiableArea(shape.getCenterPostion());
             }
             myInvalidate();
@@ -195,11 +189,11 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
 
     @Override
     public void refresh() {
-        if (mBitmap == null){
+        if (mBitmap == null) {
             mBitmap = BitmapUtils.createBitmap(bitmapWidth, bitmapHeight);
-            bitmapCanvas =new Canvas(mBitmap);
+            bitmapCanvas = new Canvas(mBitmap);
         }
-        mBitmap.eraseColor(Color.WHITE);
+        mBitmap.eraseColor(backgroundColor);
         for (int i = 0; i < absShapeList.size(); ++i) {
             AbsShape absShape = absShapeList.get(i);
             if (absShape != null)
@@ -210,30 +204,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         moveToCenter();
     }
 
-    /**
-     * SfDisplayInfoView异步绘制
-     */
-    private void drawResult() {
-        Canvas resultCanvas = null;
-        try {
-            if (mBitmap == null) {
-                refresh();
-            }
-            //获取canvas实例
-            resultCanvas = sfh.lockCanvas();
-            if (resultCanvas != null) {
-                //将屏幕设置为白色
-                resultCanvas.drawColor(Color.WHITE);
-                resultCanvas.drawBitmap(mBitmap, matrix, null);
-            }
-        } catch (Exception e) {
-            L.e(TAG, e.toString());
-        } finally {
-            if (resultCanvas != null)
-                //将画好的画布提交
-                sfh.unlockCanvasAndPost(resultCanvas);
-        }
-    }
 
     public void setSizes(int w, int h) {
         bitmapHeight = h;
@@ -246,8 +216,8 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isLoadHisSucceed) return false;
-        if (CURRENT_MODE == MODE_STATIC) return false;
-        if (CURRENT_MODE == MODE_PAINT || MODE_ERASER == CURRENT_MODE) {
+        if (currentOpMode == OpMode.MODE_STATIC) return false;
+        if (currentOpMode == OpMode.MODE_PAINT || OpMode.MODE_ERASER == currentOpMode) {
             return paintUtils(event);
         }
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -346,28 +316,27 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
      */
     private void touchStart(float x, float y) {
         float[] floats = mapPointFromInvertMatrix(x, y);
-        tempShape = new PathShape(CURRENT_MODE == MODE_PAINT ? brushColor : Color.WHITE, brushWidth, CURRENT_MODE == MODE_ERASER);
-        tempShape.setShapeType(Constants.SHAPE_PEN);
-        tempShape.onAddPoint(floats[0], floats[1]);
+        tempPaintShape = new PathShape(currentOpMode == OpMode.MODE_PAINT ? brushColor : Color.WHITE, brushWidth, currentOpMode == OpMode.MODE_ERASER);
+        tempPaintShape.onAddPoint(floats[0], floats[1]);
     }
 
     private void touchMove(float x, float y) {
-        if (tempShape == null) return;
+        if (tempPaintShape == null) return;
         float[] floats = mapPointFromInvertMatrix(x, y);
-        tempShape.onAddPoint(floats[0], floats[1]);
-        tempShape.drawShape(bitmapCanvas);
+        tempPaintShape.onAddPoint(floats[0], floats[1]);
+        tempPaintShape.drawShape(bitmapCanvas);
         myInvalidate();
     }
 
 
     private void touchUp(float x, float y) {
-        if (tempShape == null) return;
+        if (tempPaintShape == null) return;
         if (bitmapCanvas == null) return;
         if (onDrawLineListener != null) {
-            onDrawLineListener.onNewLine(tempShape);
+            onDrawLineListener.onNewLine(tempPaintShape);
         }
         touchMove(x, y);
-        absShapeList.add(tempShape);
+        absShapeList.add(tempPaintShape);
     }
 
     /**
@@ -415,17 +384,20 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         return true;
     }
 
-    public void setCurrentMode(int currentMode) {
-        CURRENT_MODE = currentMode;
+    public void setCurrentMode(OpMode currentMode) {
+        this.currentOpMode = currentMode;
     }
 
+    @Override
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
     public int getBrushColor() {
         return brushColor;
     }
 
     public void setBrushColor(int brushColor) {
         this.brushColor = brushColor;
-        setCurrentMode(MODE_PAINT);
     }
 
     public int getBrushWidth() {
@@ -436,8 +408,11 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         this.brushWidth = brushWidth;
     }
 
+    /**
+     * 刷新数据
+     */
     private void myInvalidate() {
-        if (showThread!=null){
+        if (showThread != null) {
             synchronized (showThread) {
                 showThread.notify();
             }
@@ -450,20 +425,36 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     }
 
     /**
-     * 划线接口
+     * SfDisplayInfoView异步绘制
      */
-    public interface OnDrawLineListener {
-        void onNewLine(PathShape lineShape);
+    private void drawResult() {
+        Canvas resultCanvas = null;
+        try {
+            if (mBitmap == null) {
+                refresh();
+            }
+            //获取canvas实例
+            resultCanvas = sfh.lockCanvas();
+            if (resultCanvas != null) {
+                resultCanvas.drawColor(backgroundColor, PorterDuff.Mode.CLEAR);
+                resultCanvas.drawColor(backgroundColor);
+                //将屏幕设置为白色
+                resultCanvas.drawBitmap(mBitmap, matrix, null);
+            }
+        } catch (Exception e) {
+            L.e(TAG, e.toString());
+        } finally {
+            if (resultCanvas != null)
+                //将画好的画布提交
+                sfh.unlockCanvasAndPost(resultCanvas);
+        }
     }
 
-
-    /**
-     * 画笔加速线程
-     */
     private class ShowThread extends Thread {
         ShowThread() {
             super("ShowThread");
         }
+
         @Override
         public void run() {
             while (!isfinsh) {
@@ -475,8 +466,14 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
                         e.printStackTrace();
                     }
                 }
-
             }
         }
+    }
+
+    /**
+     * 划线接口
+     */
+    public interface OnDrawLineListener {
+        void onNewLine(PathShape lineShape);
     }
 }

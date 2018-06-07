@@ -6,6 +6,7 @@ import android.graphics.RectF;
 
 public class TextShape extends AbsShape {
     private RectF mDrawRect;
+    private String text;
 
     public TextShape(String str, int cyan) {
         super();
@@ -16,6 +17,13 @@ public class TextShape extends AbsShape {
         mPaint.setTextSize(64);
         mPaint.setAntiAlias(true);//去除锯齿
         mPaint.setFilterBitmap(true);//对位图进行滤波处理
+    }
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public void onLayout(float startX, float startY, float x, float y) {

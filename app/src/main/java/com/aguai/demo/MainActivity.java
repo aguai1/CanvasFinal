@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.aguai.canvaswrap.OpMode;
 import com.aguai.canvaswrap.SfDisplayInfoView;
 import com.aguai.canvaswrap.shape.CircleShape;
 import com.aguai.canvaswrap.shape.OvalShape;
@@ -39,25 +40,22 @@ public class MainActivity extends AppCompatActivity {
         window.setFlags(flag, flag);
         setContentView(R.layout.activity_canvaswrapper);
         ButterKnife.bind(this);
-        displayview.setSizes(1080, 1920);
-
+        displayview.setBackgroundColor(Color.GRAY);
         CircleShape circleShape = new CircleShape(true, Color.GREEN, 10);
         circleShape.onLayout(0, 0, 500, 800);
-        circleShape.setMeetingPage("");
         displayview.addShape(circleShape);
-
         arcMenu.setOnMenuItemClickListener(new ArcMenu.OnMenuItemClickListener() {
             @Override
             public void onClick(View view, int pos) {
                 switch (view.getId()) {
                     case R.id.iv_pen:
-                        displayview.setCurrentMode(SfDisplayInfoView.MODE_PAINT);
+                        displayview.setCurrentMode(OpMode.MODE_PAINT);
                         break;
                     case R.id.iv_eraser:
-                        displayview.setCurrentMode(SfDisplayInfoView.MODE_ERASER);
+                        displayview.setCurrentMode(OpMode.MODE_ERASER);
                         break;
                     case R.id.iv_nomal:
-                        displayview.setCurrentMode(SfDisplayInfoView.MODE_SHOW);
+                        displayview.setCurrentMode(OpMode.MODE_SHOW);
                         break;
                 }
             }

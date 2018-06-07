@@ -10,7 +10,7 @@ import com.aguai.canvaswrap.CanvasWrapper;
  */
 public class PicShape extends AbsShape {
 
-
+    private String picUrl;
     public PicShape( String picPath) {
         super();
         this.picUrl = picPath;
@@ -33,9 +33,12 @@ public class PicShape extends AbsShape {
             canvas.drawBitmap(bitmap1, startX, startY, null);
         }
     }
-
-
-    public String getPicPath() {
+    public String getPicUrl() {
         return picUrl;
     }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
 }

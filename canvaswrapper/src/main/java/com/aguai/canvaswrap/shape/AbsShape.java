@@ -8,48 +8,31 @@ import com.aguai.canvaswrap.shape.path.SerializablePath;
 
 public abstract class AbsShape implements IShape {
 
-    protected SerializablePath mPath = new SerializablePath();
     protected boolean isFull = false;
-    protected String meetingPage;
-    protected String meetingId;
-    protected int shapeType;
 
     protected Paint mPaint;
     protected int cx;
     protected int cy;
-
     protected float startX;
     protected float startY;
     protected float endx;
     protected float endy;
-    protected String picUrl;
-    protected String text;
-    protected int color = Color.BLACK;
+    protected int color;
     protected int width;
     protected RectF mInvalidRect = new RectF();
     private int offsetY;
     private int offsetX;
 
     public AbsShape() {
-        initPaint();
+        this(false,Color.BLACK,4);
     }
 
     public AbsShape(int color) {
-        this.color = color;
-        initPaint();
-        // 设置paint的颜色
-        mPaint.setColor(color);
-
+        this(false,color,4);
     }
 
     public AbsShape(int color, int width) {
-        this.width = width;
-        this.color = color;
-        initPaint();
-        // 设置paint的颜色
-        mPaint.setColor(color);
-        mPaint.setStrokeWidth(width);
-
+        this(false,color,width);
     }
 
     /**
@@ -60,17 +43,6 @@ public abstract class AbsShape implements IShape {
         this.isFull = isFull;
         this.width = width;
         this.color = color;
-        initPaint();
-        // 设置paint的颜色
-        mPaint.setColor(color);
-        mPaint.setStrokeWidth(width);
-        // 设置paint的 style 为STROKE：空心
-        mPaint.setStyle(isFull ? Paint.Style.FILL : Paint.Style.STROKE);
-
-    }
-
-
-    private void initPaint() {
         // 去锯齿
         mPaint = new Paint();
         // 去锯齿
@@ -78,17 +50,16 @@ public abstract class AbsShape implements IShape {
         // 设置paint的 style 为STROKE：空心
         mPaint.setStyle(Paint.Style.STROKE);
         // 设置paint的外框宽度
-        mPaint.setStrokeWidth(4);
+        mPaint.setStrokeWidth(width);
         // 获取跟清晰的图像采样
         mPaint.setDither(true);
         // 接合处为圆弧
         mPaint.setStrokeJoin(Paint.Join.ROUND);
-        // 画笔样式圆形
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
         // 设置paint的颜色
         mPaint.setColor(color);
+        // 设置paint的 style 为STROKE：空心
+        mPaint.setStyle(isFull ? Paint.Style.FILL : Paint.Style.STROKE);
     }
-
 
     public float[] getCenterPostion() {
         return new float[]{cx, cy};
@@ -102,21 +73,6 @@ public abstract class AbsShape implements IShape {
         isFull = full;
     }
 
-    public String getMeetingPage() {
-        return meetingPage;
-    }
-
-    public void setMeetingPage(String meetingPage) {
-        this.meetingPage = meetingPage;
-    }
-
-    public int getShapeType() {
-        return shapeType;
-    }
-
-    public void setShapeType(int shapeType) {
-        this.shapeType = shapeType;
-    }
 
     public Paint getmPaint() {
         return mPaint;
@@ -174,29 +130,7 @@ public abstract class AbsShape implements IShape {
         this.endy = endy;
     }
 
-    public String getPicUrl() {
-        return picUrl;
-    }
 
-    public void setPicUrl(String picUrl) {
-        this.picUrl = picUrl;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getMeetingId() {
-        return meetingId;
-    }
-
-    public void setMeetingId(String meetingId) {
-        this.meetingId = meetingId;
-    }
 
     public int getColor() {
         return color;

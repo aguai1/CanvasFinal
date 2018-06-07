@@ -16,8 +16,10 @@ import java.util.List;
  */
 public class PathShape extends AbsShape {
 
+    private SerializablePath mPath = new SerializablePath();
+
     public PathShape(int color, int width, boolean isEraser) {
-        super( color, width);
+        super(color, width);
         init(width, isEraser);
     }
 
