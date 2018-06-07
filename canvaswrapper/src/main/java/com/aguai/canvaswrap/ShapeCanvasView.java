@@ -134,6 +134,7 @@ public class ShapeCanvasView extends View implements IDisplay{
     @Override
     public void removeAllShape() {
         absShapeList.clear();
+        resetBitmap();
         refresh();
     }
 
@@ -163,11 +164,15 @@ public class ShapeCanvasView extends View implements IDisplay{
     public void setSizes(int w, int h) {
         bitmapHeight = h;
         bitmapWidth = w;
+        resetBitmap();
+        refresh();
+    }
+
+    private void resetBitmap() {
         if (mBitmap != null) {
             mBitmap.recycle();
         }
         mBitmap = null;
-        refresh();
     }
 
 
