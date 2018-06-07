@@ -1,47 +1,45 @@
 package com.aguai.canvaswrap.shape;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import com.aguai.canvaswrap.shape.path.SerializablePath;
-
 public abstract class AbsShape implements IShape {
 
+    protected static final int DEFAULT_PAINT_WIDTH=4;
     protected boolean isFull = false;
-
     protected Paint mPaint;
-    protected int cx;
-    protected int cy;
+    private Paint debugPaint;
     protected float startX;
     protected float startY;
     protected float endx;
     protected float endy;
     protected int color;
-    protected int width;
-    protected RectF mInvalidRect = new RectF();
+    protected int paintWidth;
+    protected RectF frameRect = new RectF();
     private int offsetY;
     private int offsetX;
 
     public AbsShape() {
-        this(false,Color.BLACK,4);
+        this(false, Color.BLACK, DEFAULT_PAINT_WIDTH);
     }
 
     public AbsShape(int color) {
-        this(false,color,4);
+        this(false, color, DEFAULT_PAINT_WIDTH);
     }
 
-    public AbsShape(int color, int width) {
-        this(false,color,width);
+    public AbsShape(int color, int paintWidth) {
+        this(false, color, paintWidth);
     }
 
     /**
      * @param isFull 是否空心
      * @param color  颜色
      */
-    public AbsShape(boolean isFull, int color, int width) {
+    public AbsShape(boolean isFull, int color, int paintWidth) {
         this.isFull = isFull;
-        this.width = width;
+        this.paintWidth = paintWidth;
         this.color = color;
         // 去锯齿
         mPaint = new Paint();
@@ -50,7 +48,7 @@ public abstract class AbsShape implements IShape {
         // 设置paint的 style 为STROKE：空心
         mPaint.setStyle(Paint.Style.STROKE);
         // 设置paint的外框宽度
-        mPaint.setStrokeWidth(width);
+        mPaint.setStrokeWidth(paintWidth);
         // 获取跟清晰的图像采样
         mPaint.setDither(true);
         // 接合处为圆弧
@@ -59,11 +57,11 @@ public abstract class AbsShape implements IShape {
         mPaint.setColor(color);
         // 设置paint的 style 为STROKE：空心
         mPaint.setStyle(isFull ? Paint.Style.FILL : Paint.Style.STROKE);
+        debugPaint = new Paint();
+        debugPaint.setStyle(Paint.Style.STROKE);
+        debugPaint.setColor(Color.RED);
     }
 
-    public float[] getCenterPostion() {
-        return new float[]{cx, cy};
-    }
 
     public boolean isFull() {
         return isFull;
@@ -82,21 +80,6 @@ public abstract class AbsShape implements IShape {
         this.mPaint = mPaint;
     }
 
-    public int getCx() {
-        return cx;
-    }
-
-    public void setCx(int cx) {
-        this.cx = cx;
-    }
-
-    public int getCy() {
-        return cy;
-    }
-
-    public void setCy(int cy) {
-        this.cy = cy;
-    }
 
     public float getStartX() {
         return startX;
@@ -131,7 +114,6 @@ public abstract class AbsShape implements IShape {
     }
 
 
-
     public int getColor() {
         return color;
     }
@@ -143,21 +125,38 @@ public abstract class AbsShape implements IShape {
     }
 
 
-    public int getWidth() {
-        return width;
+    public int getPaintWidth() {
+        return paintWidth;
     }
 
-    public void setWidth(int width) {
-        mPaint.setStrokeWidth(width);
-        this.width = width;
+    public void setPaintWidth(int paintWidth) {
+        mPaint.setStrokeWidth(paintWidth);
+        this.paintWidth = paintWidth;
     }
 
-    public RectF getmInvalidRect() {
-        return mInvalidRect;
+    public int[] getCenterPostion() {
+        int[] centerPos = new int[2];
+        centerPos[0] = (int) ((startX + endx) / 2);
+        centerPos[1] = (int) ((startY + endy) / 2);
+        return centerPos;
     }
 
-    public void setmInvalidRect(RectF mInvalidRect) {
-        this.mInvalidRect = mInvalidRect;
+    public void drawShape(Canvas canvas) {
+        if (isFull){
+            frameRect.set(startX, startY , endx, endy);
+        }else {
+            frameRect.set(startX - paintWidth / 2, startY - paintWidth / 2, endx + paintWidth / 2, endy + paintWidth / 2);
+        }
+        canvas.drawRect(frameRect, debugPaint);
+
+    }
+
+    public RectF getFrameRect() {
+        return frameRect;
+    }
+
+    public void setFrameRect(RectF frameRect) {
+        this.frameRect = frameRect;
     }
 
     public int getOffsetY() {

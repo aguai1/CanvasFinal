@@ -9,6 +9,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.AbsoluteLayout;
 
+import com.aguai.guideview.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +62,7 @@ public class GuideContainer extends AbsoluteLayout {
         RectF rectById = guideView.getRectById(id);
         LayoutParams lap = new LayoutParams(getLayoutParams());
         lap.width = getWidth();
-        lap.height = (int) getContext().getResources().getDimension(R.dimen.item_height);
+//        lap.height = (int) getContext().getResources().getDimension(R.dimen.item_height);
         lap.x = 0;
         lap.y = (int) rectById.top - lap.height;
         addView(view, lap);
@@ -78,7 +80,7 @@ public class GuideContainer extends AbsoluteLayout {
         lap.x = 0;
         lap.y = (int) rectById.bottom;
         lap.width = getWidth();
-        lap.height = (int) getContext().getResources().getDimension(R.dimen.item_height);
+//        lap.height = (int) getContext().getResources().getDimension(R.dimen.item_height);
         addView(view, lap);
     }
 

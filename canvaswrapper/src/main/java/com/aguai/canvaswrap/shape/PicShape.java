@@ -11,27 +11,21 @@ import com.aguai.canvaswrap.CanvasWrapper;
 public class PicShape extends AbsShape {
 
     private String picUrl;
-    public PicShape( String picPath) {
+    public PicShape( String picPath,float mStartX, float mStartY, float x, float y) {
         super();
         this.picUrl = picPath;
-    }
-
-    public void onLayout(float mStartX, float mStartY, float x, float y) {
         this.startX = mStartX;
         this.startY = mStartY;
         this.endx = x;
         this.endy = y;
-
-        int border = (int) mPaint.getStrokeWidth();
-        mInvalidRect.set(mStartX - border, mStartY - border, mStartX + border, mStartY + border);
-        mInvalidRect.union(x - border, y - border, x + border, y + border);
     }
 
     public void drawShape(final Canvas canvas) {
-        Bitmap bitmap1 = CanvasWrapper.getInstance().getImageLoader().getImageFromUrl(picUrl);
-        if (bitmap1 != null) {
-            canvas.drawBitmap(bitmap1, startX, startY, null);
+        Bitmap bitmap = CanvasWrapper.getInstance().getImageLoader().getImageFromUrl(picUrl);
+        if (bitmap != null) {
+            canvas.drawBitmap(bitmap, startX, startY, null);
         }
+        super.drawShape(canvas);
     }
     public String getPicUrl() {
         return picUrl;

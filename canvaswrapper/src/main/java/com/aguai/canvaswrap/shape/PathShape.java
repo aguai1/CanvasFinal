@@ -9,6 +9,7 @@ import android.graphics.PorterDuffXfermode;
 
 import com.aguai.canvaswrap.shape.path.SerializablePath;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,43 +20,23 @@ public class PathShape extends AbsShape {
     private SerializablePath mPath = new SerializablePath();
 
     public PathShape(int color, int width, boolean isEraser) {
-        super(color, width);
-        init(width, isEraser);
+        this(color, width, isEraser, null);
     }
 
     public PathShape(int color, int width, boolean isEraser, List<int[]> points) {
-        super( color, width);
-        init(width, isEraser);
-        mPath.addPathPoints(points);
-    }
-
-    private void init(int width, boolean isEraser) {
+        super(color, width);
         mPath = new SerializablePath();
+        if (points != null) {
+            mPath.addPathPoints(points);
+        }
         if (isEraser) {
             mPaint.setColor(Color.TRANSPARENT);
             mPaint.setStrokeWidth(width);
             mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        } else {
-
-            mPaint.setStrokeWidth(width);
-            // 去锯齿
-            mPaint.setAntiAlias(true);
-            // 设置paint的 style 为STROKE：空心
-            mPaint.setStyle(Paint.Style.STROKE);
-
-            // 接合处为圆弧
-            mPaint.setStrokeJoin(Paint.Join.ROUND);
-            // 画笔样式圆形
-            mPaint.setStrokeCap(Paint.Cap.ROUND);
         }
     }
 
-
-    public void onLayout(float startX, float startY, float x, float y) {
-
-    }
-    public void onLayout(float x, float y) {
-
+    public void onMove(float x, float y) {
         for (Point point : mPath.getPathPoints()) {
             point.x += x;
             point.y += y;
@@ -74,15 +55,13 @@ public class PathShape extends AbsShape {
         float mCurveEndX = (x + startX) / 2;
         float mCurveEndY = (y + startY) / 2;
         mPath.addQuadPathPoint(new Point((int) mCurveEndX, (int) mCurveEndY));
-        mInvalidRect.union((int) mCurveEndX - border,
-                (int) mCurveEndY - border, (int) mCurveEndX + border,
-                (int) mCurveEndY + border);
         startX = x;
         startY = y;
     }
 
     public void drawShape(Canvas canvas) {
         canvas.drawPath(mPath, mPaint);
+        super.drawShape(canvas);
     }
 
     public List<Point> getPoints() {

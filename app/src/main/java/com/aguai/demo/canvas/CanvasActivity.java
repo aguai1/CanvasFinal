@@ -1,4 +1,4 @@
-package com.aguai.demo;
+package com.aguai.demo.canvas;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,10 +21,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class CanvasActivity extends AppCompatActivity {
 
     @Bind(R.id.displayview)
-    SfDisplayInfoView displayview;
+    SfDisplayInfoView sfDisplayInfoView;
     @Bind(R.id.arc_menu)
     ArcMenu arcMenu;
 
@@ -40,53 +40,54 @@ public class MainActivity extends AppCompatActivity {
         window.setFlags(flag, flag);
         setContentView(R.layout.activity_canvaswrapper);
         ButterKnife.bind(this);
-        displayview.setBackgroundColor(Color.GRAY);
-        CircleShape circleShape = new CircleShape(true, Color.GREEN, 10);
-        circleShape.onLayout(0, 0, 500, 800);
-        displayview.addShape(circleShape);
+        sfDisplayInfoView.setBgColor(Color.parseColor("#44ffff00"));
+        CircleShape circleShape = new CircleShape(false, Color.GREEN, 10,300,300,200);
+        sfDisplayInfoView.addShape(circleShape);
         arcMenu.setOnMenuItemClickListener(new ArcMenu.OnMenuItemClickListener() {
             @Override
             public void onClick(View view, int pos) {
                 switch (view.getId()) {
                     case R.id.iv_pen:
-                        displayview.setCurrentMode(OpMode.MODE_PAINT);
+                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_PAINT);
                         break;
                     case R.id.iv_eraser:
-                        displayview.setCurrentMode(OpMode.MODE_ERASER);
+                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_ERASER);
                         break;
                     case R.id.iv_nomal:
-                        displayview.setCurrentMode(OpMode.MODE_SHOW);
+                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_SHOW);
+                        break;
+                    case R.id.iv_static:
+                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_STATIC);
                         break;
                 }
             }
         });
     }
 
-    @OnClick({R.id.oval, R.id.txt, R.id.rect, R.id.circle,R.id.moveCenter})
+    @OnClick({R.id.oval, R.id.txt, R.id.rect, R.id.circle,R.id.moveCenter,R.id.clear})
     public void onViewClick(View view) {
         switch (view.getId()) {
             case R.id.rect:
-                RectangleShape rectangleShape = new RectangleShape(true, Color.RED, 10);
-                rectangleShape.onLayout(0, 0, 500, 800);
-                displayview.addShape(rectangleShape);
+                RectangleShape rectangleShape = new RectangleShape(true, Color.BLUE, 10,100, 1000, 500, 800);
+                sfDisplayInfoView.addShape(rectangleShape);
                 break;
             case R.id.circle:
-                CircleShape circleShape = new CircleShape(true, Color.YELLOW, 10);
-                circleShape.onLayout(500, 500, 700, 700);
-                displayview.addShape(circleShape);
+                CircleShape circleShape = new CircleShape(true, Color.YELLOW, 10,500,600,100);
+                sfDisplayInfoView.addShape(circleShape);
                 break;
             case R.id.oval:
-                OvalShape ovalShape = new OvalShape(true, Color.DKGRAY, 10);
-                ovalShape.onLayout(500, 600, 900, 1000);
-                displayview.addShape(ovalShape);
+                OvalShape ovalShape = new OvalShape(false, Color.DKGRAY, 10,500,300,700,1000);
+                sfDisplayInfoView.addShape(ovalShape);
                 break;
             case R.id.txt:
-                TextShape text = new TextShape("阿怪的点点滴滴点点滴滴 ", Color.DKGRAY);
-                text.onLayout(100, 600, 200, 1000);
-                displayview.addShape(text);
+                TextShape text = new TextShape("阿怪的点点滴滴点点滴滴 ", Color.DKGRAY,100, 600);
+                sfDisplayInfoView.addShape(text);
                 break;
             case R.id.moveCenter:
-                displayview.moveToCenter();
+                sfDisplayInfoView.moveToCenter();
+                break;
+            case R.id.clear:
+                sfDisplayInfoView.removeAllShape();
                 break;
         }
     }

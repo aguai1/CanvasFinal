@@ -5,6 +5,10 @@
     android:clipToPadding="true"
     android:orientation="vertical"
     android:background="#000">
+  <ImageView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:src="@mipmap/ic_launcher"/>
   <com.aguai.canvaswrap.SfDisplayInfoView
       android:id="@+id/displayview"
       android:layout_width="match_parent"
@@ -33,7 +37,11 @@
     <TextView
         android:id="@+id/moveCenter"
         style="@style/MenuStyle"
-        android:text="还原画布位置"/>
+        android:text="还原位置"/>
+    <TextView
+        android:id="@+id/clear"
+        style="@style/MenuStyle"
+        android:text="清空画布"/>
 
   </LinearLayout>
 
@@ -69,6 +77,14 @@
         />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/iv_nomal"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/btn_normal"
+        app:backgroundTint="@color/white"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/iv_static"
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:layout_centerInParent="true"

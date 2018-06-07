@@ -156,7 +156,7 @@ public class ArcMenu extends ViewGroup implements OnClickListener {
                         * i));
                 int ct = (int) (mRadius * Math.cos(Math.PI / 2 / (count - 2)
                         * i));
-                // childview width
+                // childview paintWidth
                 int cWidth = child.getMeasuredWidth();
                 // childview height
                 int cHeight = child.getMeasuredHeight();

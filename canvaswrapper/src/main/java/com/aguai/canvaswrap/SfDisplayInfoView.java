@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ import com.aguai.canvaswrap.shape.PathShape;
 import com.aguai.canvaswrap.utils.BitmapUtils;
 import com.aguai.canvaswrap.utils.L;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +92,9 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     private void init(Context context) {
         sfh = getHolder();
         sfh.addCallback(this);
+        setZOrderOnTop(true);
+        sfh.setFormat(PixelFormat.TRANSLUCENT);
+        setZOrderMediaOverlay(true);
     }
 
     @Override
@@ -141,10 +146,8 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     private void drawNewShapes() {
         while (!loadQueue.isEmpty()) {
             AbsShape shape = loadQueue.poll();
-            if (bitmapCanvas != null)
+            if (bitmapCanvas != null){
                 shape.drawShape(bitmapCanvas);
-            if (currentOpMode == OpMode.MODE_SHOW) {
-                moveToVisiableArea(shape.getCenterPostion());
             }
             myInvalidate();
         }
@@ -166,26 +169,9 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     }
 
     @Override
-    public void moveShape(AbsShape absShape, final int x, final int y) {
-        if (absShape != null) {
-            if (absShape instanceof PathShape) {
-                PathShape shape = (PathShape) absShape;
-                shape.onLayout(absShape.getStartX() + x, absShape.getStartY() + y);
-            } else {
-                absShape.onLayout(absShape.getStartX() + x, absShape.getStartY() + y, absShape.getEndx() + x, absShape.getEndy() + y);
-            }
-            refresh();
-        }
+    public void moveShape(AbsShape absShape, final int dx, final int dy) {
 
     }
-
-    public void adjustShapeBounds(AbsShape absShape, final float startX, final float startY, final float endx, final float endy) {
-        if (absShape != null) {
-            absShape.onLayout(startX, startY, endx, endy);
-            refresh();
-        }
-    }
-
 
     @Override
     public void refresh() {
@@ -193,7 +179,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
             mBitmap = BitmapUtils.createBitmap(bitmapWidth, bitmapHeight);
             bitmapCanvas = new Canvas(mBitmap);
         }
-        mBitmap.eraseColor(backgroundColor);
+//        mBitmap.eraseColor(backgroundColor);
         for (int i = 0; i < absShapeList.size(); ++i) {
             AbsShape absShape = absShapeList.get(i);
             if (absShape != null)
@@ -208,6 +194,9 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     public void setSizes(int w, int h) {
         bitmapHeight = h;
         bitmapWidth = w;
+        if (mBitmap!=null){
+            mBitmap.recycle();
+        }
         mBitmap = null;
         refresh();
     }
@@ -388,8 +377,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
         this.currentOpMode = currentMode;
     }
 
-    @Override
-    public void setBackgroundColor(int backgroundColor) {
+    public void setBgColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
     public int getBrushColor() {
@@ -417,7 +405,6 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
                 showThread.notify();
             }
         }
-
     }
 
     public void setOnDrawLineListener(OnDrawLineListener onDrawLineListener) {
@@ -436,7 +423,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
             //获取canvas实例
             resultCanvas = sfh.lockCanvas();
             if (resultCanvas != null) {
-                resultCanvas.drawColor(backgroundColor, PorterDuff.Mode.CLEAR);
+                resultCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                 resultCanvas.drawColor(backgroundColor);
                 //将屏幕设置为白色
                 resultCanvas.drawBitmap(mBitmap, matrix, null);

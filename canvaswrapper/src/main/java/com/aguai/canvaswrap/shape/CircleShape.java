@@ -7,35 +7,21 @@ import android.graphics.Canvas;
  */
 public class CircleShape extends AbsShape {
     private int radius;
-    public CircleShape(boolean isFull, int color, int width) {
+    public CircleShape(boolean isFull, int color, int width,float centerX, float centerY,int radius) {
         super(isFull, color, width);
-    }
-
-    /**
-     * 设置圆形的位置
-     * @param startX
-     * @param startY
-     * @param x
-     * @param y
-     */
-    public void onLayout(float startX, float startY, float x, float y) {
-        this.startX = startX;
-        this.startY = startY;
-        this.endx = x;
-        this.endy = y;
-        setPostion(startX, startY, x, y);
-        int border = (int) mPaint.getStrokeWidth();
-        mInvalidRect.set(cx - radius - border, cy - radius - border, cx + radius + border, cy + radius + border);
+        this.startX = centerX - radius;
+        this.startY = centerY - radius;
+        this.radius = radius;
+        this.endx = centerX +radius;
+        this.endy = centerY+radius;
     }
 
     public void drawShape(Canvas canvas) {
-        canvas.drawCircle(cx, cy, radius, mPaint);
+        int[] centerPostion = getCenterPostion();
+        canvas.drawCircle(centerPostion[0], centerPostion[1], radius, mPaint);
+        super.drawShape(canvas);
     }
 
-    private void setPostion(float startX, float startY, float x, float y) {
-        cx = (int) ((x + startX) / 2);
-        cy = (int) ((y + startY) / 2);
-        radius = (int) Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)) / 2;
-    }
+
 
 }
