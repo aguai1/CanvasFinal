@@ -5,11 +5,7 @@
     android:clipToPadding="true"
     android:orientation="vertical"
     android:background="#000">
-  <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:src="@mipmap/ic_launcher"/>
-  <com.aguai.canvaswrap.SfDisplayInfoView
+  <com.aguai.canvaswrap.ShapeCanvasView
       android:id="@+id/displayview"
       android:layout_width="match_parent"
       android:layout_height="match_parent" />

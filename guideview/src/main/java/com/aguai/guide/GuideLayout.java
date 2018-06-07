@@ -5,13 +5,11 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.aguai.canvaswrap.OpMode;
-import com.aguai.canvaswrap.SfDisplayInfoView;
+import com.aguai.canvaswrap.ShapeCanvasView;
 import com.aguai.canvaswrap.shape.CircleShape;
 
 /**
@@ -23,7 +21,7 @@ import com.aguai.canvaswrap.shape.CircleShape;
  * ================================================
  */
 public class GuideLayout extends FrameLayout{
-    private SfDisplayInfoView sfDisplayInfoView;
+    private ShapeCanvasView shapeCanvasView;
 
     public GuideLayout(@NonNull Context context) {
         super(context);
@@ -35,15 +33,15 @@ public class GuideLayout extends FrameLayout{
     }
 
     private void init(Context context, AttributeSet attributeSet) {
-        sfDisplayInfoView =new SfDisplayInfoView(context);
-        sfDisplayInfoView.setBgColor(Color.parseColor("#33000000"));
+        shapeCanvasView =new ShapeCanvasView(context);
+        shapeCanvasView.setBgColor(Color.parseColor("#33000000"));
         FrameLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        sfDisplayInfoView.setLayoutParams(layoutParams);
-        sfDisplayInfoView.setCurrentMode(OpMode.MODE_STATIC);
-        addView(sfDisplayInfoView);
+        shapeCanvasView.setLayoutParams(layoutParams);
+        shapeCanvasView.setCurrentMode(OpMode.MODE_STATIC);
+        addView(shapeCanvasView);
 
         CircleShape circleShape = new CircleShape(false, Color.GREEN, 10,300,300,200);
-        sfDisplayInfoView.addShape(circleShape);
+        shapeCanvasView.addShape(circleShape);
     }
 
 

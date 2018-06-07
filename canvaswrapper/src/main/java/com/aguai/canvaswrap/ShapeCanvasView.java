@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.aguai.canvaswrap.shape.AbsShape;
 import com.aguai.canvaswrap.shape.PathShape;
@@ -28,7 +29,7 @@ import java.util.Queue;
  * Created by Aguai on 2016/11/20.
  * 电子白板控件多缓冲线程SurfaceView实现
  */
-public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceHolder.Callback {
+public class ShapeCanvasView extends View implements IDisplay{
 
     private static final String TAG = "SfDisplayInfoView";
 
@@ -63,15 +64,12 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
      * shape集合
      */
     private List<AbsShape> absShapeList = new ArrayList<>();
-    private ShowThread showThread = null;
-    private SurfaceHolder sfh = null;
 
     /**
      * 显示队列
      */
     private Queue<AbsShape> loadQueue = new ArrayDeque<>();
 
-    private boolean isfinsh = false;
     private boolean isLoadHisSucceed = false;
     private int bitmapWidth = 2000;
     private int bitmapHeight = 1000;
@@ -79,53 +77,24 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
 
     private OnDrawLineListener onDrawLineListener;
 
-    public SfDisplayInfoView(Context context) {
+    public ShapeCanvasView(Context context) {
         super(context);
         init(context);
     }
 
-    public SfDisplayInfoView(Context context, AttributeSet attrs) {
+    public ShapeCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
     private void init(Context context) {
-        sfh = getHolder();
-        sfh.addCallback(this);
-        setZOrderOnTop(true);
-        sfh.setFormat(PixelFormat.TRANSLUCENT);
-        setZOrderMediaOverlay(true);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setSizes(getMeasuredWidth(),getMeasuredHeight());
+        setSizes(getMeasuredWidth(), getMeasuredHeight());
         moveToCenter();
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        isfinsh = false;
-        showThread = new ShowThread();
-        showThread.start();
-        refresh();
-        myInvalidate();
-        L.e(TAG, "surfaceCreated");
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        L.e(TAG, "surfaceChanged");
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        isfinsh = true;
-        synchronized (showThread) {
-            showThread.notifyAll();
-        }
-        L.e(TAG, "surfaceDestroyed");
     }
 
     @Override
@@ -146,7 +115,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     private void drawNewShapes() {
         while (!loadQueue.isEmpty()) {
             AbsShape shape = loadQueue.poll();
-            if (bitmapCanvas != null){
+            if (bitmapCanvas != null) {
                 shape.drawShape(bitmapCanvas);
             }
             myInvalidate();
@@ -194,7 +163,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     public void setSizes(int w, int h) {
         bitmapHeight = h;
         bitmapWidth = w;
-        if (mBitmap!=null){
+        if (mBitmap != null) {
             mBitmap.recycle();
         }
         mBitmap = null;
@@ -380,6 +349,7 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
     public void setBgColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
+
     public int getBrushColor() {
         return brushColor;
     }
@@ -400,61 +370,27 @@ public class SfDisplayInfoView extends SurfaceView implements IDisplay, SurfaceH
      * 刷新数据
      */
     private void myInvalidate() {
-        if (showThread != null) {
-            synchronized (showThread) {
-                showThread.notify();
-            }
-        }
+        invalidate();
     }
 
-    public void setOnDrawLineListener(OnDrawLineListener onDrawLineListener) {
-        this.onDrawLineListener = onDrawLineListener;
-    }
-
-    /**
-     * SfDisplayInfoView异步绘制
-     */
-    private void drawResult() {
-        Canvas resultCanvas = null;
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
         try {
             if (mBitmap == null) {
                 refresh();
             }
             //获取canvas实例
-            resultCanvas = sfh.lockCanvas();
-            if (resultCanvas != null) {
-                resultCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                resultCanvas.drawColor(backgroundColor);
-                //将屏幕设置为白色
-                resultCanvas.drawBitmap(mBitmap, matrix, null);
-            }
+            canvas.drawColor(backgroundColor);
+            //将屏幕设置为白色
+            canvas.drawBitmap(mBitmap, matrix, null);
         } catch (Exception e) {
             L.e(TAG, e.toString());
-        } finally {
-            if (resultCanvas != null)
-                //将画好的画布提交
-                sfh.unlockCanvasAndPost(resultCanvas);
         }
     }
 
-    private class ShowThread extends Thread {
-        ShowThread() {
-            super("ShowThread");
-        }
-
-        @Override
-        public void run() {
-            while (!isfinsh) {
-                drawResult();
-                synchronized (this) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+    public void setOnDrawLineListener(OnDrawLineListener onDrawLineListener) {
+        this.onDrawLineListener = onDrawLineListener;
     }
 
     /**

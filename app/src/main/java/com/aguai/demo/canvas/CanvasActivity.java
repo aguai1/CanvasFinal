@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.aguai.canvaswrap.OpMode;
-import com.aguai.canvaswrap.SfDisplayInfoView;
+import com.aguai.canvaswrap.ShapeCanvasView;
 import com.aguai.canvaswrap.shape.CircleShape;
 import com.aguai.canvaswrap.shape.OvalShape;
 import com.aguai.canvaswrap.shape.RectangleShape;
@@ -24,7 +24,7 @@ import butterknife.OnClick;
 public class CanvasActivity extends AppCompatActivity {
 
     @Bind(R.id.displayview)
-    SfDisplayInfoView sfDisplayInfoView;
+    ShapeCanvasView shapeCanvasView;
     @Bind(R.id.arc_menu)
     ArcMenu arcMenu;
 
@@ -40,24 +40,24 @@ public class CanvasActivity extends AppCompatActivity {
         window.setFlags(flag, flag);
         setContentView(R.layout.activity_canvaswrapper);
         ButterKnife.bind(this);
-        sfDisplayInfoView.setBgColor(Color.parseColor("#44ffff00"));
+        shapeCanvasView.setBgColor(Color.WHITE);
         CircleShape circleShape = new CircleShape(false, Color.GREEN, 10,300,300,200);
-        sfDisplayInfoView.addShape(circleShape);
+        shapeCanvasView.addShape(circleShape);
         arcMenu.setOnMenuItemClickListener(new ArcMenu.OnMenuItemClickListener() {
             @Override
             public void onClick(View view, int pos) {
                 switch (view.getId()) {
                     case R.id.iv_pen:
-                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_PAINT);
+                        shapeCanvasView.setCurrentMode(OpMode.MODE_PAINT);
                         break;
                     case R.id.iv_eraser:
-                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_ERASER);
+                        shapeCanvasView.setCurrentMode(OpMode.MODE_ERASER);
                         break;
                     case R.id.iv_nomal:
-                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_SHOW);
+                        shapeCanvasView.setCurrentMode(OpMode.MODE_SHOW);
                         break;
                     case R.id.iv_static:
-                        sfDisplayInfoView.setCurrentMode(OpMode.MODE_STATIC);
+                        shapeCanvasView.setCurrentMode(OpMode.MODE_STATIC);
                         break;
                 }
             }
@@ -69,25 +69,25 @@ public class CanvasActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.rect:
                 RectangleShape rectangleShape = new RectangleShape(true, Color.BLUE, 10,100, 1000, 500, 800);
-                sfDisplayInfoView.addShape(rectangleShape);
+                shapeCanvasView.addShape(rectangleShape);
                 break;
             case R.id.circle:
                 CircleShape circleShape = new CircleShape(true, Color.YELLOW, 10,500,600,100);
-                sfDisplayInfoView.addShape(circleShape);
+                shapeCanvasView.addShape(circleShape);
                 break;
             case R.id.oval:
                 OvalShape ovalShape = new OvalShape(false, Color.DKGRAY, 10,500,300,700,1000);
-                sfDisplayInfoView.addShape(ovalShape);
+                shapeCanvasView.addShape(ovalShape);
                 break;
             case R.id.txt:
                 TextShape text = new TextShape("阿怪的点点滴滴点点滴滴 ", Color.DKGRAY,100, 600);
-                sfDisplayInfoView.addShape(text);
+                shapeCanvasView.addShape(text);
                 break;
             case R.id.moveCenter:
-                sfDisplayInfoView.moveToCenter();
+                shapeCanvasView.moveToCenter();
                 break;
             case R.id.clear:
-                sfDisplayInfoView.removeAllShape();
+                shapeCanvasView.removeAllShape();
                 break;
         }
     }
