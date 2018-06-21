@@ -142,12 +142,12 @@ public abstract class AbsShape implements IShape {
     }
 
     public void drawShape(Canvas canvas) {
-        if (isFull){
-            frameRect.set(startX, startY , endx, endy);
-        }else {
-            frameRect.set(startX - paintWidth / 2, startY - paintWidth / 2, endx + paintWidth / 2, endy + paintWidth / 2);
-        }
-        canvas.drawRect(frameRect, debugPaint);
+//        if (isFull){
+//            frameRect.set(startX, startY , endx, endy);
+//        }else {
+//            frameRect.set(startX - paintWidth / 2, startY - paintWidth / 2, endx + paintWidth / 2, endy + paintWidth / 2);
+//        }
+//        canvas.drawRect(frameRect, debugPaint);
 
     }
 

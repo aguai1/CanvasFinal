@@ -80,7 +80,7 @@ public class CanvasActivity extends AppCompatActivity {
                 shapeCanvasView.addShape(ovalShape);
                 break;
             case R.id.txt:
-                TextShape text = new TextShape("阿怪的点点滴滴点点滴滴 ", Color.DKGRAY,100, 600);
+                TextShape text = new TextShape("阿怪的点点滴滴\n点点滴滴 ", Color.DKGRAY,100, 600);
                 shapeCanvasView.addShape(text);
                 break;
             case R.id.moveCenter:
